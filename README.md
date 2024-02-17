@@ -2,7 +2,7 @@
 
 **This mod requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api).**
 ***
-This is a fork of Simonlourson's client [auto-flight mod](https://www.curseforge.com/minecraft/mc-mods/elytra-auto-flight), updated and added many additional utilities.
+This is a fork of MBrinks2239's client [auto-flight mod](https://github.com/MBrinks2239/fabric-elytra-autopilot), updated and added many additional utilities.
 
 
 ## How to use

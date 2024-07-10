@@ -1,7 +1,7 @@
 package net.elytraautopilot.utils;
 
 import net.elytraautopilot.ElytraAutoPilot;
-import net.elytraautopilot.config.ModConfig;
+import net.elytraautopilot.config.ModConfigOld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -33,7 +33,7 @@ public class Hud {
         double altitude = player.getPos().y;
         double avgVelocity = 0f;
         double avgHorizontalVelocity = 0f;
-        int gticks = Math.max(1, ModConfig.advanced.groundCheckTicks);
+        int gticks = Math.max(1, ModConfigOld.advanced.groundCheckTicks);
 
         if (_tick >= gticks) {
             _index++;
@@ -66,7 +66,7 @@ public class Hud {
             avgHorizontalVelocity = velocityListHorizontal.stream().mapToDouble(val -> val).average().orElse(0.0);
         }
         if (hudString == null) hudString = new Text[10];
-        if (!ModConfig.gui.showgui) {
+        if (!ModConfigOld.gui.showgui) {
             hudString[0] = Text.of("");
             hudString[1] = Text.of("");
             hudString[2] = Text.of("");
@@ -89,8 +89,8 @@ public class Hud {
                 .formatted(Formatting.AQUA);
         hudString[3] = Text.translatable("text." + modid + ".hud.neededHeight")
                 .formatted(Formatting.AQUA)
-                .append(Text.literal(groundheight > ModConfig.flightprofile.minHeight ? "Ready" : String.valueOf(Math.round(ModConfig.flightprofile.minHeight-groundheight)))
-                        .formatted(groundheight > ModConfig.flightprofile.minHeight ? Formatting.GREEN : Formatting.RED));
+                .append(Text.literal(groundheight > ModConfigOld.flightprofile.minHeight ? "Ready" : String.valueOf(Math.round(ModConfigOld.flightprofile.minHeight-groundheight)))
+                        .formatted(groundheight > ModConfigOld.flightprofile.minHeight ? Formatting.GREEN : Formatting.RED));
         hudString[4] = Text.translatable("text." + modid + ".hud.speed", String.format("%.2f", currentVelocity * 20))
                 .formatted(Formatting.YELLOW);
         if (avgVelocity == 0f) {
@@ -113,8 +113,8 @@ public class Hud {
             }
             hudString[9] = Text.translatable("text." + modid + ".hud.autoLand")
                     .formatted(Formatting.LIGHT_PURPLE)
-                    .append(Text.translatable(ModConfig.flightprofile.autoLanding ? "text." + modid + ".hud.enabled" : "text." + modid + ".hud.disabled")
-                            .formatted(ModConfig.flightprofile.autoLanding ? Formatting.GREEN : Formatting.RED));
+                    .append(Text.translatable(ModConfigOld.flightprofile.autoLanding ? "text." + modid + ".hud.enabled" : "text." + modid + ".hud.disabled")
+                            .formatted(ModConfigOld.flightprofile.autoLanding ? Formatting.GREEN : Formatting.RED));
             if (isLanding) {
                 hudString[8] = Text.translatable("text." + modid + ".hud.landing")
                         .formatted(Formatting.LIGHT_PURPLE);

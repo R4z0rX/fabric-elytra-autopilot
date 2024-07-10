@@ -25,6 +25,10 @@ repositories {
 	maven {
 		url 'https://maven.terraformersmc.com/'
 	}
+	maven {
+		name 'Xander Maven'
+		url 'https://maven.isxander.dev/releases'
+	}
 	mavenCentral()
 }
 
@@ -36,11 +40,7 @@ dependencies {
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.github.Lortseam.completeconfig:base:${project.completeconfig_version}"
-	include "com.github.Lortseam.completeconfig:base:${project.completeconfig_version}"
-
-	modImplementation("com.github.Lortseam.completeconfig:gui-cloth:${project.completeconfig_version}")
-	include "com.github.Lortseam.completeconfig:gui-cloth:${project.completeconfig_version}"
+	modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
 
 	modApi "com.terraformersmc:modmenu:${project.modmenu_version}"
 }

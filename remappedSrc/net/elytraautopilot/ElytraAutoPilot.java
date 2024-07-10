@@ -170,7 +170,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
         if (player == null) return;
 
         //Fps adaptation (not perfect but works nicely most of the time)
-        float fps_delta = minecraftClient.getRenderTickCounter().getLastFrameDuration();
+        float fps_delta = minecraftClient.getLastFrameDuration();
         float fps_result = 20/fps_delta;
         double speedMod = 60/fps_result; //Adapt to base 60 FPS
 
@@ -237,7 +237,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
                     distance = Math.sqrt(f * f + d * d);
                     if (distance < 20) {
                         minecraftClient.player.sendMessage(Text.translatable("text.elytraautopilot.landing").formatted(Formatting.BLUE), true);
-                        SoundEvent soundEvent = SoundEvent.of(Identifier.of(ModConfig.flightprofile.playSoundOnLanding));
+                        SoundEvent soundEvent = SoundEvent.of(new Identifier(ModConfig.flightprofile.playSoundOnLanding));
                         player.playSound(soundEvent, 1.3f, 1f);
                         isLanding = true;
                     }
@@ -363,7 +363,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
 
         if (!landPressed && KeyBindings.landBinding.isPressed() && autoFlight) {
             player.sendMessage(Text.translatable("text.elytraautopilot.landing").formatted(Formatting.BLUE), true);
-            SoundEvent soundEvent = SoundEvent.of(Identifier.of(ModConfig.flightprofile.playSoundOnLanding));
+            SoundEvent soundEvent = SoundEvent.of(new Identifier(ModConfig.flightprofile.playSoundOnLanding));
             player.playSound(soundEvent, 1.3f, 1f);
             minecraftClient.options.useKey.setPressed(false);
             forceLand = true;
@@ -473,7 +473,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
                             SlotActionType.SWAP,
                             player
                     );
-                    player.playSound(SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA.value(), 1.0F, 1.0F);
+                    player.playSound(SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA, 1.0F, 1.0F);
                     player.sendMessage(Text.translatable("text." + MODID + ".swappedElytra").formatted(Formatting.GREEN), true);
                 }
                 else {

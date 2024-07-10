@@ -66,7 +66,7 @@ public class Hud {
             avgHorizontalVelocity = velocityListHorizontal.stream().mapToDouble(val -> val).average().orElse(0.0);
         }
         if (hudString == null) hudString = new Text[10];
-        if (!ModConfig.gui.showgui) {
+        if (!ModConfig.gui.showgui || minecraftClient.options.debugEnabled) {
             hudString[0] = Text.of("");
             hudString[1] = Text.of("");
             hudString[2] = Text.of("");

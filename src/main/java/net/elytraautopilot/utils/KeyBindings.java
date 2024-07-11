@@ -24,14 +24,14 @@ public class KeyBindings {
         landBinding = new KeyBinding(
                 "key." + modid + ".land",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_L,
+                GLFW.GLFW_KEY_RIGHT_SHIFT,
                 "config." + modid + ".title"
         );
 
         takeoffBinding = new KeyBinding(
                 "key." + modid + ".takeoff",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_T,
+                GLFW.GLFW_KEY_RIGHT_ALT,
                 "config." + modid + ".title"
         );
 

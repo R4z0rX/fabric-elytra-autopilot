@@ -267,6 +267,11 @@ public class ElytraAutoPilot implements ClientModInitializer {
         if (!(minecraftClient.isPaused() && minecraftClient.isInSingleplayer())) Hud.tick();
         double velMod;
 
+        if (ClientCommands.bufferSave) {
+            ModConfig.INSTANCE.saveConfig(ModConfig.CONFIG_FILE.toFile());
+            ClientCommands.bufferSave = false;
+        }
+
         PlayerEntity player = minecraftClient.player;
 
         if (player == null){

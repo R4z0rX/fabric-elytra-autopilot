@@ -18,6 +18,7 @@ public class ModConfig {
 
     public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
+            .serializeNulls()
             .create();
 
     public static final Path CONFIG_FILE = FabricLoader.getInstance()
@@ -326,15 +327,15 @@ public class ModConfig {
                                         newVal -> ModConfig.INSTANCE.pullDownSpeed = newVal)
                                 .controller(DoubleFieldControllerBuilder::create)
                                 .build())
-//                        .option(ListOption.<String>createBuilder()
-//                                .name(Text.of("Fly Locations"))
-//                                .binding(
-//                                        flyLocationsDefault,
-//                                        () -> ModConfig.INSTANCE.flyLocations,
-//                                        newVal -> ModConfig.INSTANCE.flyLocations = newVal)
-//                                .controller(StringControllerBuilder::create)
-//                                .initial("")
-//                                .build())
+                        .option(ListOption.<String>createBuilder()
+                                .name(Text.of("Fly Locations"))
+                                .binding(
+                                        flyLocationsDefault,
+                                        () -> ModConfig.INSTANCE.flyLocations,
+                                        newVal -> ModConfig.INSTANCE.flyLocations = newVal)
+                                .controller(StringControllerBuilder::create)
+                                .initial("Location;0;0")
+                                .build())
                         .build())
                 .save(() -> INSTANCE.saveConfig(CONFIG_FILE.toFile()))
                 .build()
@@ -364,6 +365,10 @@ public class ModConfig {
 
         if (config == null) {
             config = new ModConfig();
+        }
+
+        if (config.flyLocations == null) {
+            config.flyLocations = new ArrayList<>();
         }
 
         config.saveConfig(file);

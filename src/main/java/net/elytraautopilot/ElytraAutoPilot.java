@@ -2,7 +2,7 @@ package net.elytraautopilot;
 
 import com.terraformersmc.modmenu.ModMenu;
 import net.elytraautopilot.commands.ClientCommands;
-import net.elytraautopilot.config.ModConfigOld;
+import net.elytraautopilot.config.ModConfig;
 import net.elytraautopilot.utils.Hud;
 import net.elytraautopilot.utils.KeyBindings;
 import net.fabricmc.api.ClientModInitializer;
@@ -64,12 +64,6 @@ public class ElytraAutoPilot implements ClientModInitializer {
     public static double distance = 0f;
     public static double groundheight;
 
-    private static final ModConfigOld config = new ModConfigOld(MODID);
-
-    public static ModConfigOld getConfig() {
-        return config;
-    }
-
     @Override
 	public void onInitializeClient() {
         minecraftClient = MinecraftClient.getInstance();
@@ -77,9 +71,6 @@ public class ElytraAutoPilot implements ClientModInitializer {
         KeyBindings.init();
         HudRenderCallback.EVENT.register((matrixStack, tickDelta) -> ElytraAutoPilot.this.onScreenTick());
         ClientTickEvents.END_CLIENT_TICK.register(e -> this.onClientTick());
-
-        //config = new ModConfig(MODID);
-        config.load();
 
         ClientCommands.register(minecraftClient);
     }
@@ -128,7 +119,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
             return;
         }
         if (player != null) {
-            if (groundheight > ModConfigOld.flightprofile.minHeight) {
+            if (groundheight > ModConfig.INSTANCE.minHeight) {
                 onTakeoff = false;
                 minecraftClient.options.useKey.setPressed(false);
                 minecraftClient.options.jumpKey.setPressed(false);
@@ -176,27 +167,27 @@ public class ElytraAutoPilot implements ClientModInitializer {
 
         // Calculate hard coded flight modes based on pitch.
         float pitch = player.getPitch();
-        if (doGlide) {
-            if (pitch < GLIDE_ANGLE) {
-                player.setPitch((float) (pitch + ModConfigOld.advanced.pullDownSpeed*speedMod*3));
-                pitch = player.getPitch();
-                if (pitch >= GLIDE_ANGLE) {
-                    player.setPitch(GLIDE_ANGLE);
-                    doGlide = false;
-                }
-            }
-            else if (pitch > GLIDE_ANGLE){
-                player.setPitch((float) (pitch - ModConfigOld.advanced.pullDownSpeed*speedMod)*3);
-                pitch = player.getPitch();
-                if (pitch <= GLIDE_ANGLE) {
-                    player.setPitch(GLIDE_ANGLE);
-                    doGlide = false;
-                }
-            }
-        }
-        else if (onTakeoff) {
+//        if (doGlide) {
+//            if (pitch < GLIDE_ANGLE) {
+//                player.setPitch((float) (pitch + ModConfig.INSTANCE.pullDownSpeed*speedMod*3));
+//                pitch = player.getPitch();
+//                if (pitch >= GLIDE_ANGLE) {
+//                    player.setPitch(GLIDE_ANGLE);
+//                    doGlide = false;
+//                }
+//            }
+//            else if (pitch > GLIDE_ANGLE){
+//                player.setPitch((float) (pitch - ModConfig.INSTANCE.pullDownSpeed*speedMod)*3);
+//                pitch = player.getPitch();
+//                if (pitch <= GLIDE_ANGLE) {
+//                    player.setPitch(GLIDE_ANGLE);
+//                    doGlide = false;
+//                }
+//            }
+//        }
+        if (onTakeoff) {
             if (pitch > -90f) {
-                player.setPitch((float) (pitch - ModConfigOld.flightprofile.takeOffPull*speedMod));
+                player.setPitch((float) (pitch - ModConfig.INSTANCE.takeOffPull*speedMod));
                 pitch = player.getPitch();
             }
             if (pitch <= -90f) player.setPitch(-90f); // Very stiff and unnatural movement
@@ -205,19 +196,14 @@ public class ElytraAutoPilot implements ClientModInitializer {
             // Flyto behavior
             if (isflytoActive || forceLand) {
                 if (isLanding || forceLand) {
-                    if (!forceLand && !ModConfigOld.flightprofile.autoLanding){
+                    if (!forceLand && !ModConfig.INSTANCE.autoLanding){
                         isflytoActive = false;
                         isLanding = false;
                         return;
                     }
                     isDescending = true;
-                    if (ModConfigOld.flightprofile.riskyLanding && groundheight > 60) {
-                        if (currentVelocityHorizontal > 0.3f || currentVelocity > 1.0f){
-                            smoothLanding(player, speedMod);
-                        }
-                        else{
-                            riskyLanding(player, speedMod);
-                        }
+                    if (ModConfig.INSTANCE.riskyLanding && groundheight > 60) {
+                        riskyLanding(player, speedMod);
                     }
                     else {
                         smoothLanding(player, speedMod);
@@ -229,15 +215,15 @@ public class ElytraAutoPilot implements ClientModInitializer {
                     double d = (double) argZpos - playerPosition.z;
                     float targetYaw = MathHelper.wrapDegrees((float) (MathHelper.atan2(d, f) * 57.2957763671875D) - 90.0F);
                     float yaw = MathHelper.wrapDegrees(player.getYaw());
-                    if (Math.abs(yaw-targetYaw) < ModConfigOld.flightprofile.turningSpeed*2*speedMod) player.setYaw(targetYaw);
+                    if (Math.abs(yaw-targetYaw) < ModConfig.INSTANCE.turningSpeed*2*speedMod) player.setYaw(targetYaw);
                     else {
-                        if (yaw < targetYaw) player.setYaw((float) (yaw + ModConfigOld.flightprofile.turningSpeed*speedMod));
-                        if (yaw > targetYaw) player.setYaw((float) (yaw - ModConfigOld.flightprofile.turningSpeed*speedMod));
+                        if (yaw < targetYaw) player.setYaw((float) (yaw + ModConfig.INSTANCE.turningSpeed*speedMod));
+                        if (yaw > targetYaw) player.setYaw((float) (yaw - ModConfig.INSTANCE.turningSpeed*speedMod));
                     }
                     distance = Math.sqrt(f * f + d * d);
                     if (distance < 20) {
                         minecraftClient.player.sendMessage(Text.translatable("text.elytraautopilot.landing").formatted(Formatting.BLUE), true);
-                        SoundEvent soundEvent = SoundEvent.of(Identifier.of(ModConfigOld.flightprofile.playSoundOnLanding));
+                        SoundEvent soundEvent = SoundEvent.of(Identifier.of(ModConfig.INSTANCE.playSoundOnLanding));
                         player.playSound(soundEvent, 1.3f, 1f);
                         isLanding = true;
                     }
@@ -245,22 +231,22 @@ public class ElytraAutoPilot implements ClientModInitializer {
             }
             // Flight pitch behavior
             if (pullUp && !(isLanding || forceLand)) {
-                player.setPitch((float) (pitch - ModConfigOld.advanced.pullUpSpeed*speedMod));
+                player.setPitch((float) (pitch - ModConfig.INSTANCE.pullUpSpeed*speedMod));
                 pitch = player.getPitch();
-                if (pitch <= ModConfigOld.advanced.pullUpAngle) {
-                    player.setPitch((float) ModConfigOld.advanced.pullUpAngle);
+                if (pitch <= ModConfig.INSTANCE.pullUpAngle) {
+                    player.setPitch((float) ModConfig.INSTANCE.pullUpAngle);
                 }
                 // Powered flight behavior
-                minecraftClient.options.useKey.setPressed(ModConfigOld.flightprofile.poweredFlight && currentVelocity < 1.25f);
+                minecraftClient.options.useKey.setPressed(ModConfig.INSTANCE.poweredFlight && currentVelocity < 1.25f);
             }
             if (pullDown && !(isLanding || forceLand)) {
-                player.setPitch((float) (pitch + ModConfigOld.advanced.pullDownSpeed*pitchMod*speedMod));
+                player.setPitch((float) (pitch + ModConfig.INSTANCE.pullDownSpeed*pitchMod*speedMod));
                 pitch = player.getPitch();
-                if (pitch >= ModConfigOld.advanced.pullDownAngle) {
-                    player.setPitch((float) ModConfigOld.advanced.pullDownAngle);
+                if (pitch >= ModConfig.INSTANCE.pullDownAngle) {
+                    player.setPitch((float) ModConfig.INSTANCE.pullDownAngle);
                 }
                 // Powered flight behavior
-                minecraftClient.options.useKey.setPressed(ModConfigOld.flightprofile.poweredFlight && currentVelocity < 1.25f);
+                minecraftClient.options.useKey.setPressed(ModConfig.INSTANCE.poweredFlight && currentVelocity < 1.25f);
             }
         }
         else
@@ -281,11 +267,6 @@ public class ElytraAutoPilot implements ClientModInitializer {
         if (!(minecraftClient.isPaused() && minecraftClient.isInSingleplayer())) Hud.tick();
         double velMod;
 
-        if (ClientCommands.bufferSave) {
-            config.save();
-            ClientCommands.bufferSave = false;
-        }
-
         PlayerEntity player = minecraftClient.player;
 
         if (player == null){
@@ -305,7 +286,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
         double altitude;
         if (autoFlight) {
             // Elytra hotswap
-            if (!tryRestockElytra(player) && ModConfigOld.flightprofile.emergencyLand) {
+            if (!tryRestockElytra(player) && ModConfig.INSTANCE.emergencyLand) {
                 forceLand = true;
             }
 
@@ -322,14 +303,14 @@ public class ElytraAutoPilot implements ClientModInitializer {
             {
                 pullUp = false;
                 pullDown = true;
-                if (altitude > ModConfigOld.flightprofile.maxHeight) { //TODO fix inconsistent height behavior
+                if (altitude > ModConfig.INSTANCE.maxHeight) { //TODO fix inconsistent height behavior
                     velHigh = 0.3f;
                 }
-                else if (altitude > ModConfigOld.flightprofile.maxHeight-10) {
+                else if (altitude > ModConfig.INSTANCE.maxHeight-10) {
                     velLow = 0.28475f;
                 }
                 velMod = Math.max(velHigh, velLow);
-                if (currentVelocity >= ModConfigOld.advanced.pullDownMaxVelocity + velMod) {
+                if (currentVelocity >= ModConfig.INSTANCE.pullDownMaxVelocity + velMod) {
                     isDescending = false;
                     pullDown = false;
                     pullUp = true;
@@ -342,7 +323,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
                 velLow = 0f;
                 pullUp = true;
                 pullDown = false;
-                if (currentVelocity <= ModConfigOld.advanced.pullUpMinVelocity || altitude > ModConfigOld.flightprofile.maxHeight-10) {
+                if (currentVelocity <= ModConfig.INSTANCE.pullUpMinVelocity || altitude > ModConfig.INSTANCE.maxHeight-10) {
                     isDescending = true;
                     pullDown = true;
                     pullUp = false;
@@ -363,7 +344,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
 
         if (!landPressed && KeyBindings.landBinding.isPressed() && autoFlight) {
             player.sendMessage(Text.translatable("text.elytraautopilot.landing").formatted(Formatting.BLUE), true);
-            SoundEvent soundEvent = SoundEvent.of(Identifier.of(ModConfigOld.flightprofile.playSoundOnLanding));
+            SoundEvent soundEvent = SoundEvent.of(Identifier.of(ModConfig.INSTANCE.playSoundOnLanding));
             player.playSound(soundEvent, 1.3f, 1f);
             minecraftClient.options.useKey.setPressed(false);
             forceLand = true;
@@ -371,7 +352,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
 
         if(!configPressed && KeyBindings.configBinding.isPressed()) {
             if (player.isFallFlying()) {
-                if (!autoFlight && groundheight < ModConfigOld.flightprofile.minHeight){
+                if (!autoFlight && groundheight < ModConfig.INSTANCE.minHeight){
                     player.sendMessage(Text.translatable("text." + MODID + ".autoFlightFail.tooLow").formatted(Formatting.RED), true);
                     doGlide = true;
                 }
@@ -416,7 +397,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
     }
 
     private static boolean tryRestockFirework(PlayerEntity player) {
-        if(ModConfigOld.flightprofile.fireworkHotswap) {
+        if(ModConfig.INSTANCE.fireworkHotswap) {
             ItemStack newFirework = null;
             for (ItemStack itemStack : player.getInventory().main) {
                 if (itemStack.getItem() == Items.FIREWORK_ROCKET ) {
@@ -449,7 +430,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
 
     private static boolean tryRestockElytra(PlayerEntity player) {
         int elytraDurability = player.getInventory().armor.get(2).getMaxDamage() - player.getInventory().armor.get(2).getDamage();
-        if (ModConfigOld.flightprofile.elytraHotswap) {
+        if (ModConfig.INSTANCE.elytraHotswap) {
             if (elytraDurability <= 5) { // Leave some leeway, so we don't stop flying
                 // Optimization: find the first elytra with sufficient durability
                 ItemStack newElytra = null;
@@ -520,8 +501,8 @@ public class ElytraAutoPilot implements ClientModInitializer {
             fallPitch = (float) ((groundheight-20)/30)*20 + fallPitchMin;
         }
         pitchMod = 3f;
-        player.setYaw((float) (yaw + ModConfigOld.flightprofile.autoLandSpeed*speedMod));
-        player.setPitch((float) (pitch + ModConfigOld.advanced.pullDownSpeed*pitchMod*speedMod));
+        player.setYaw((float) (yaw + ModConfig.INSTANCE.autoLandSpeed*speedMod));
+        player.setPitch((float) (pitch + ModConfig.INSTANCE.pullDownSpeed*pitchMod*speedMod));
         pitch = player.getPitch();
         if (pitch >= fallPitch) {
             player.setPitch(fallPitch);
@@ -531,7 +512,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
     private void riskyLanding(PlayerEntity player, double speedMod)
     {
         float pitch = player.getPitch();
-        player.setPitch((float) (pitch + ModConfigOld.flightprofile.takeOffPull*speedMod));
+        player.setPitch((float) (pitch + ModConfig.INSTANCE.takeOffPull*speedMod));
         pitch = player.getPitch();
         if (pitch > 90f) player.setPitch(90f);
     }

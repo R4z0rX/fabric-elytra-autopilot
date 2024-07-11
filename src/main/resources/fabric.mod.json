@@ -33,6 +33,9 @@
   "entrypoints": {
     "client" : [
       "net.elytraautopilot.ElytraAutoPilot"
+    ],
+    "modmenu" : [
+      "net.elytraautopilot.config.ModMenuIntegration"
     ]
   },
   "mixins": [

@@ -3,7 +3,7 @@ package net.elytraautopilot.commands;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.elytraautopilot.ElytraAutoPilot;
-import net.elytraautopilot.config.ModConfigOld;
+import net.elytraautopilot.config.ModConfig;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
@@ -26,11 +26,11 @@ public class ClientCommands {
 
                                 String locationName = StringArgumentType.getString(context, "Name");
                                 int index = 0;
-                                for (String s : ModConfigOld.advanced.flyLocations) {
+                                for (String s : ModConfig.INSTANCE.flyLocations) {
                                     String[] tokens = s.split(";");
                                     if (tokens.length != 3) {
                                         ElytraAutoPilot.LOGGER.error("Error in reading Fly Location list entry!");
-                                        ModConfigOld.advanced.flyLocations.remove(index);
+                                        ModConfig.INSTANCE.flyLocations.remove(index);
                                         bufferSave = true;
                                         break;
                                     }
@@ -38,7 +38,7 @@ public class ClientCommands {
 
                                     if (storedName.equals(locationName)) {
                                         if (minecraftClient.player.isFallFlying()) { //If the player is flying
-                                            if (ElytraAutoPilot.groundheight > ModConfigOld.flightprofile.minHeight) { //If above required height
+                                            if (ElytraAutoPilot.groundheight > ModConfig.INSTANCE.minHeight) { //If above required height
                                                 ElytraAutoPilot.autoFlight = true;
                                                 ElytraAutoPilot.argXpos = parseInt(tokens[1]);
                                                 ElytraAutoPilot.argZpos = parseInt(tokens[2]);
@@ -65,7 +65,7 @@ public class ClientCommands {
                                     .executes(context -> {
                                         if (minecraftClient.player == null) return 0;
                                         if (minecraftClient.player.isFallFlying()) { //If the player is flying
-                                            if (ElytraAutoPilot.groundheight > ModConfigOld.flightprofile.minHeight) { //If above required height
+                                            if (ElytraAutoPilot.groundheight > ModConfig.INSTANCE.minHeight) { //If above required height
                                                 ElytraAutoPilot.autoFlight = true;
                                                 ElytraAutoPilot.argXpos = IntegerArgumentType.getInteger(context, "X");
                                                 ElytraAutoPilot.argZpos = IntegerArgumentType.getInteger(context, "Z");
@@ -91,11 +91,11 @@ public class ClientCommands {
 
                             String locationName = StringArgumentType.getString(context, "Name");
                             int index = 0;
-                            for (String s : ModConfigOld.advanced.flyLocations) {
+                            for (String s : ModConfig.INSTANCE.flyLocations) {
                                 String[] tokens = s.split(";");
                                 if (tokens.length != 3) {
                                     ElytraAutoPilot.LOGGER.error("Error in reading Fly Location list entry!");
-                                    ModConfigOld.advanced.flyLocations.remove(index);
+                                    ModConfig.INSTANCE.flyLocations.remove(index);
                                     bufferSave = true;
                                     break;
                                 }
@@ -137,18 +137,18 @@ public class ClientCommands {
                                         locationName = locationName.replace(";", ":");
 
                                         int index = 0;
-                                        for (String s : ModConfigOld.advanced.flyLocations) {
+                                        for (String s : ModConfig.INSTANCE.flyLocations) {
                                             String[] tokens = s.split(";");
                                             if (tokens.length != 3) {
                                                 ElytraAutoPilot.LOGGER.error("Error in reading Fly Location list entry!");
-                                                ModConfigOld.advanced.flyLocations.remove(index);
+                                                ModConfig.INSTANCE.flyLocations.remove(index);
                                                 bufferSave = true;
                                                 break;
                                             }
                                             String storedName = tokens[0];
 
                                             if (storedName.equals(locationName)) {
-                                                ModConfigOld.advanced.flyLocations.remove(index);
+                                                ModConfig.INSTANCE.flyLocations.remove(index);
                                                 minecraftClient.player.sendMessage(Text.translatable("text.elytraautopilot.flylocation.removed", locationName).formatted(Formatting.GREEN), true);
                                                 return 1;
                                             }
@@ -169,11 +169,11 @@ public class ClientCommands {
 
                                             locationName = locationName.replace(";", ":");
                                             int index = 0;
-                                            for (String s : ModConfigOld.advanced.flyLocations) {
+                                            for (String s : ModConfig.INSTANCE.flyLocations) {
                                                 String[] tokens = s.split(";");
                                                 if (tokens.length != 3) {
                                                     ElytraAutoPilot.LOGGER.error("Error in reading Fly Location list entry!");
-                                                    ModConfigOld.advanced.flyLocations.remove(index);
+                                                    ModConfig.INSTANCE.flyLocations.remove(index);
                                                     bufferSave = true;
                                                     break;
                                                 }
@@ -185,7 +185,7 @@ public class ClientCommands {
                                                 }
                                                 index++;
                                             }
-                                            ModConfigOld.advanced.flyLocations.add(locationName + ";" + locationX + ";" + locationZ);
+                                            ModConfig.INSTANCE.flyLocations.add(locationName + ";" + locationX + ";" + locationZ);
                                             minecraftClient.player.sendMessage(Text.translatable("text.elytraautopilot.flylocation.saved", locationName, locationX, locationZ).formatted(Formatting.GREEN));
                                             bufferSave = true;
                                             return 1;
@@ -199,7 +199,7 @@ public class ClientCommands {
                             ClientPlayerEntity player = minecraftClient.player;
                             if (player == null) return 0;
                             player.sendMessage(Text.translatable("text.elytraautopilot.landing").formatted(Formatting.BLUE), true);
-                            SoundEvent soundEvent = SoundEvent.of(Identifier.of(ModConfigOld.flightprofile.playSoundOnLanding));
+                            SoundEvent soundEvent = SoundEvent.of(Identifier.of(ModConfig.INSTANCE.playSoundOnLanding));
                             player.playSound(soundEvent, 1.3f, 1f);
                             minecraftClient.options.useKey.setPressed(false);
                             ElytraAutoPilot.forceLand = true;

@@ -1,7 +1,7 @@
 package net.elytraautopilot.mixin;
 
 import net.elytraautopilot.ElytraAutoPilot;
-import net.elytraautopilot.config.ModConfigOld;
+import net.elytraautopilot.config.ModConfig;
 import net.elytraautopilot.utils.Hud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -21,8 +21,8 @@ public class InGameHudMixin {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			if (minecraftClient.currentScreen == null && ElytraAutoPilot.calculateHud) {
 				if (Hud.hudString != null) {
-					int stringX = ModConfigOld.gui.guiX;
-					int stringY = ModConfigOld.gui.guiY;
+					int stringX = ModConfig.INSTANCE.guiX;
+					int stringY = ModConfig.INSTANCE.guiY;
 					for (int i = 0; i < Hud.hudString.length; i++) {
 						context.drawTextWithShadow(minecraftClient.textRenderer, Hud.hudString[i].asOrderedText(), stringX, stringY, 0xFFFFFF);
 						stringY += minecraftClient.textRenderer.fontHeight + 1;

@@ -5,8 +5,11 @@ import com.google.gson.GsonBuilder;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.*;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.impl.util.log.Log;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -343,6 +346,8 @@ public class ModConfig {
     }
 
     public void saveConfig(File file) {
+        Logger logger = LoggerFactory.getLogger("ElytraAutoPilot");
+        logger.info(GSON.toString());
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             GSON.toJson(this, writer);
         } catch (IOException e) {

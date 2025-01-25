@@ -102,7 +102,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
 
                 World world = player.getWorld();
                 Vec3d clientPos = player.getPos();
-                int l = world.getTopY();
+                int l = world.getTopYInclusive();
                 int n = 2;
                 double c = clientPos.getY();
                 for (double i = c; i < l; i++) {
@@ -132,7 +132,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
                 }
                 return;
             }
-            if (!player.isFallFlying()) minecraftClient.options.jumpKey.setPressed(!minecraftClient.options.jumpKey.isPressed());
+            if (!player.isGliding()) minecraftClient.options.jumpKey.setPressed(!minecraftClient.options.jumpKey.isPressed());
             Item itemMain = player.getMainHandStack().getItem();
             Item itemOff = player.getOffHandStack().getItem();
             boolean hasFirework = (itemMain == Items.FIREWORK_ROCKET  || itemOff == Items.FIREWORK_ROCKET);
@@ -280,7 +280,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
             return;
         }
 
-        if (player.isFallFlying())
+        if (player.isGliding())
             calculateHud = true;
         else {
             calculateHud = false;
@@ -356,7 +356,7 @@ public class ElytraAutoPilot implements ClientModInitializer {
         }
 
         if(!configPressed && KeyBindings.configBinding.isPressed()) {
-            if (player.isFallFlying()) {
+            if (player.isGliding()) {
                 if (!autoFlight && groundheight < ModConfig.INSTANCE.minHeight){
                     player.sendMessage(Text.translatable("text." + MODID + ".autoFlightFail.tooLow").formatted(Formatting.RED), true);
                     doGlide = true;

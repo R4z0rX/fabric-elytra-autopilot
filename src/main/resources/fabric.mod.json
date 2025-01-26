@@ -7,7 +7,7 @@
   "name": "Elytra AutoPilot",
   "description": "Automatic elytra flight with minimal use of fireworks",
   "authors": [
-    "Merlijn",
+    "Cookie_n00b",
     "RazrCraft",
     "TheMegax",
     "simonlourson"
@@ -51,7 +51,8 @@
     "yet_another_config_lib_v3": "*"
   },
   "suggests": {
-    "flamingo": "*"
+    "modmenu": "*",
+    "xaerominimap": "*"
   },
   "custom": {
     "modmenu": {

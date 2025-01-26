@@ -44,9 +44,9 @@ public class ModConfig {
     // Flight profile defaults
     public static final int maxHeightDefault = 360;
     public static final int minHeightDefault = 180;
-    public static final int maxMaxHeight = 500;
+    public static final int maxMaxHeight = 10000;
     public static final int minMaxHeight = 0;
-    public static final int maxMinHeight = 500;
+    public static final int maxMinHeight = 10000;
     public static final int minMinHeight = 0;
     public static final boolean autoLandingDefault = true;
     public static final String playSoundOnLandingDefault = "minecraft:block.note_block.pling";

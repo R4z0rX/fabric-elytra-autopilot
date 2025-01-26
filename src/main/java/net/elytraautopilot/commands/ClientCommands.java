@@ -37,7 +37,7 @@ public class ClientCommands {
                                     String storedName = tokens[0];
 
                                     if (storedName.equals(locationName)) {
-                                        if (minecraftClient.player.isFallFlying()) { //If the player is flying
+                                        if (minecraftClient.player.isGliding()) { //If the player is flying
                                             if (ElytraAutoPilot.groundheight > ModConfig.INSTANCE.minHeight) { //If above required height
                                                 ElytraAutoPilot.autoFlight = true;
                                                 ElytraAutoPilot.argXpos = parseInt(tokens[1]);
@@ -64,7 +64,7 @@ public class ClientCommands {
                             .then(ClientCommandManager.argument("Z", IntegerArgumentType.integer(-2000000000, 2000000000))
                                     .executes(context -> {
                                         if (minecraftClient.player == null) return 0;
-                                        if (minecraftClient.player.isFallFlying()) { //If the player is flying
+                                        if (minecraftClient.player.isGliding()) { //If the player is flying
                                             if (ElytraAutoPilot.groundheight > ModConfig.INSTANCE.minHeight) { //If above required height
                                                 ElytraAutoPilot.autoFlight = true;
                                                 ElytraAutoPilot.argXpos = IntegerArgumentType.getInteger(context, "X");
@@ -186,7 +186,7 @@ public class ClientCommands {
                                                 index++;
                                             }
                                             ModConfig.INSTANCE.flyLocations.add(locationName + ";" + locationX + ";" + locationZ);
-                                            minecraftClient.player.sendMessage(Text.translatable("text.elytraautopilot.flylocation.saved", locationName, locationX, locationZ).formatted(Formatting.GREEN));
+                                            minecraftClient.player.sendMessage(Text.translatable("text.elytraautopilot.flylocation.saved", locationName, locationX, locationZ).formatted(Formatting.GREEN), true);
                                             bufferSave = true;
                                             return 1;
                                         })))))

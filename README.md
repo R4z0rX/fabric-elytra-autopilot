@@ -2,33 +2,38 @@
 
 **This mod requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api).**
 ***
-This is a fork of Simonlourson's client [auto-flight mod](https://www.curseforge.com/minecraft/mc-mods/elytra-auto-flight), updated and added many additional utilities.
 
+This is a fork of TheMegax's implementation of the mod. However, TheMegax quit the project. HumanoidSandvichDispenser and R4z0rX contributed to the 1.20 implementation. Many people were involved, so check the mod author list for a full list of contributors.
 
-## How to use
+Here is the link to TheMegax's mod page: [https://www.curseforge.com/minecraft/mc-mods/elytra-autopilot](https://www.curseforge.com/minecraft/mc-mods/elytra-autopilot).
 
-Press the assigned key (default "R") while flying high enough to enable 'Auto Flight'. While in Auto Flight mode, the mod will modify your pitch between going up and down, resulting in net altitude gain.
+## How to Use
+Press the assigned key (default "R") while flying at a sufficient altitude to enable 'Auto Flight'. In Auto Flight mode, the mod will adjust your pitch between ascending and descending, resulting in a net altitude gain.
 
-## */flylocation* command
-Syntax: 
-- /flylocation set <location_name> X Z
-- /flylocation remove <location_name>
+To open the config screen and enable Mod Menu, go into the mod menu and open the configuration screen there. 
 
-Set predefined locations for later use with */flyto* command.
+## /flyto Command
+**Syntax:** `/flyto X Z` or `/flyto <name>`
 
-## */flyto* command
-Syntax:
-- */flyto <location_name>*
-- */flyto X Z*
+While flying, use this command to automatically fly to the specified coordinates. When near the destination, the mod will attempt to slow you down by circling around the target to avoid fall damage. You can disable this at any time by turning off Auto Flight or toggling the setting in the config.
 
-While flying, input this command to automatically fly to the set coordinates. When near the location, the mod will try to slow you down by rotating around the target to avoid fall damage. This can be deactivated at any time by turning off Auto Flight or using the toggle in the config.
+## /takeoff Command
+**Syntax:** `/takeoff` or `/takeoff X Z` or `/takeoff <name>`
 
-## */takeoff* command
-Syntax: 
-- */takeoff*
-- */takeoff X Z*
+If you have an Elytra equipped and fireworks in either your main or off-hand, this command will launch you upwards to a configurable height (default: 180 blocks) before activating Auto Flight. If coordinates are provided, it will then use `/flyto` to navigate to the specified location automatically.
 
-While having an elytra equiped and fireworks on either your main or off hand, this command will make you fly upwards to a configurable number of blocks (default 180 blocks) and then activate Auto Flight after reaching enought height. If coordinates are provided, it will then use /flyto to go to the set coordinates automatically.
+## /flylocation Command
+**Syntax:** `/flylocation set <name> X Z` or `/flylocation remove <name>`
 
-## *Risky landing*
-Deactivated by default, but can be activated in the config. When active, it will modify the regular landing behaviour to a more *risky* one, nosediving to the ground until the very last stretch. Not recommended for laggy servers/clients!
+Use this command to add or remove quick fly locations.
+
+## /land Command
+**Syntax:** `/land`
+
+While flying, use this command to force a landing at any time. Useful for quickly returning to the ground!
+
+### Risky Landing
+Disabled by default but can be enabled in the config. When active, this setting modifies the landing behavior to a riskier approach, nosediving until the last moment before pulling up. Not recommended for laggy servers or clients!
+
+## Xaero Minimap Support
+If you prefer not to use the built-in `/flylocation` command or are already managing waypoints with Xaero Minimap, good news! You can now use `/flyto` and `/takeoff` directly with your Xaero Minimap waypoints.

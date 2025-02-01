@@ -11,10 +11,17 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -83,6 +90,24 @@ public class ElytraAutoPilot implements ClientModInitializer {
         PlayerEntity player = minecraftClient.player;
         if (!onTakeoff) {
             if (player != null) {
+                if (ModConfig.INSTANCE.elytraAutoSwap) {
+                    int elytraSlot = getElytraIndex(player);
+                    if (elytraSlot == -1) {
+                        player.sendMessage(Text.translatable("text." + MODID + ".takeoffFail.noElytraInInventory").formatted(Formatting.RED), true);
+                        return;
+                    }
+                } else {
+                    Item itemChest = player.getInventory().armor.get(2).getItem();
+                    if (itemChest != Items.ELYTRA) {
+                        player.sendMessage(Text.translatable("text." + MODID + ".takeoffFail.noElytraEquipped").formatted(Formatting.RED), true);
+                        return;
+                    }
+                    int elytraDamage = player.getInventory().armor.get(2).getMaxDamage() - player.getInventory().armor.get(2).getDamage();
+                    if (elytraDamage == 1) {
+                        player.sendMessage(Text.translatable("text." + MODID + ".takeoffFail.elytraBroken").formatted(Formatting.RED), true);
+                        return;
+                    }
+                }
                 Item itemMain = player.getMainHandStack().getItem();
                 Item itemOff = player.getOffHandStack().getItem();
                 Item itemChest = player.getInventory().armor.get(2).getItem();
@@ -520,5 +545,92 @@ public class ElytraAutoPilot implements ClientModInitializer {
         player.setPitch((float) (pitch + ModConfig.INSTANCE.takeOffPull*speedMod));
         pitch = player.getPitch();
         if (pitch > 90f) player.setPitch(90f);
+    }
+
+    /**
+     * @param player The player
+     * @return the first index of an elytra in the specified player's inventory
+     */
+    public static int getElytraIndex(PlayerEntity player) {
+        PlayerInventory inv = player.getInventory();
+        if (inv == null) return -1;
+
+        var world = player.getWorld();
+
+        int bestSlot = -1;
+        ItemStack bestItemStack = null;
+        int bestPriority = Integer.MAX_VALUE;
+
+        for (int slot : slotArray()) {
+            ItemStack stack = inv.getStack(slot);
+            if (!stack.isOf(Items.ELYTRA) || stack.getDamage() >= stack.getMaxDamage() - 1) {
+                continue;
+            }
+
+            boolean hasMending = elytraHasMending(stack, world);
+            int unbreakingLevel = elytraGetUnbreakingLevel(stack, world);
+
+            int priority;
+            if (hasMending && unbreakingLevel > 0) {
+                priority = 1;
+            } else if (hasMending) {
+                priority = 2;
+            } else if (unbreakingLevel > 0) {
+                priority = 3;
+            } else {
+                priority = 4;
+            }
+
+            if (priority < bestPriority || (priority == bestPriority && stack.getDamage() > bestItemStack.getDamage())) {
+                bestSlot = slot;
+                bestItemStack = stack;
+                bestPriority = priority;
+            }
+        }
+        return DataSlotToNetworkSlot(bestSlot);
+    }
+
+    private static boolean elytraHasMending(ItemStack elytra, World world) {
+        var registry = world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT);
+        if(registry.isEmpty() || registry.get().getEntry(Enchantments.MENDING.getValue()).isEmpty())
+            return false;
+
+        int res = EnchantmentHelper.getLevel(registry.get().getEntry(Enchantments.MENDING.getValue()).get(), elytra);
+
+        return res > 0;
+    }
+
+    private static int elytraGetUnbreakingLevel(ItemStack elytra, World world) {
+        var registry = world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT);
+        if(registry.isEmpty() || registry.get().getEntry(Enchantments.UNBREAKING.getValue()).isEmpty())
+            return 0;
+
+        return EnchantmentHelper.getLevel(registry.get().getEntry(Enchantments.UNBREAKING.getValue()).get(), elytra);
+    }
+
+    public static int DataSlotToNetworkSlot(int index) {
+        if(index == 100)
+            index = 8;
+        else if(index == 101)
+            index = 7;
+        else if(index == 102)
+            index = 6;
+        else if(index == 103)
+            index = 5;
+        else if(index == -106 || index == 40)
+            index = 45;
+        else if(index <= 8)
+            index += 36;
+        else if(index >= 80 && index <= 83)
+            index -= 79;
+        return index;
+    }
+
+    public static int[] slotArray() {
+        int[] range = new int[37];
+        for (int i = 0; i < 9; i++) range[i] = 8 - i;
+        for (int i = 9; i < 36; i++) range[i] = 35 - (i - 9);
+        range[36] = 40;
+        return range;
     }
 }
